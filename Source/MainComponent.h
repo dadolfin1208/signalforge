@@ -1,7 +1,7 @@
 #pragma once
 
-#include <juce_gui_basics/juce_gui_basics.h>
-#include <juce_audio_devices/juce_audio_devices.h>
+#include <JuceHeader.h> // Ensure JuceHeader.h is used
+#include "AudioEngine/AudioEngine.h"
 
 class MainComponent final : public juce::Component,
                             public juce::Timer
@@ -15,13 +15,15 @@ public:
     void timerCallback() override;
 
 private:
-    juce::AudioDeviceManager deviceManager;
+    AudioEngine audioEngine; // Replaced deviceManager
 
     juce::Label sampleRateLabel;
     juce::Label bufferSizeLabel;
     juce::Label deviceNameLabel;
     juce::Label cpuUsageLabel;
     juce::Label activeChannelsLabel;
+
+    juce::AudioDeviceSelectorComponent audioSettingsComponent; // Added
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

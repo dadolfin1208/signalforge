@@ -1,6 +1,13 @@
 #include "MainComponent.h"
 
 MainComponent::MainComponent()
+    : audioSettingsComponent (audioEngine.getDeviceManager(),
+                              0, 2, // min/max input channels
+                              0, 2, // min/max output channels
+                              false, // can select MIDI inputs
+                              false, // can select MIDI outputs
+                              false, // do not show device properties box
+                              false) // do not show midi options
 {
     addAndMakeVisible(sampleRateLabel);
     addAndMakeVisible(bufferSizeLabel);
@@ -8,15 +15,15 @@ MainComponent::MainComponent()
     addAndMakeVisible(cpuUsageLabel);
     addAndMakeVisible(activeChannelsLabel);
 
-    deviceManager.initialiseWithDefaultDevices(2, 2);
+    addAndMakeVisible (audioSettingsComponent);
 
-    setSize(400, 300);
+    setSize(600, 400); // Increased size to accommodate device selector
     startTimerHz(1); // Update once per second
 }
 
 MainComponent::~MainComponent()
 {
-    deviceManager.closeAudioDevice();
+    stopTimer();
 }
 
 void MainComponent::paint(juce::Graphics& g)
@@ -28,6 +35,8 @@ void MainComponent::resized()
 {
     auto area = getLocalBounds().reduced(10);
 
+    audioSettingsComponent.setBounds (area.removeFromTop (200)); // Allocate space for selector
+
     sampleRateLabel.setBounds(area.removeFromTop(20));
     bufferSizeLabel.setBounds(area.removeFromTop(20));
     deviceNameLabel.setBounds(area.removeFromTop(20));
@@ -37,6 +46,7 @@ void MainComponent::resized()
 
 void MainComponent::timerCallback()
 {
+    auto& deviceManager = audioEngine.getDeviceManager();
     auto* device = deviceManager.getCurrentAudioDevice();
     if (device != nullptr)
     {
