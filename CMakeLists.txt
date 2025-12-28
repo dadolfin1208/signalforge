@@ -18,11 +18,14 @@ juce_generate_juce_header(SignalForge)
 target_sources(SignalForge PRIVATE
     Source/Main.cpp
     Source/MainComponent.cpp
+    Core/AudioEngine/AudioEngine.cpp
+    Core/AudioEngine/Meter.cpp
 )
 
 # Add Source directory to includes
 target_include_directories(SignalForge PRIVATE
     Source
+    Core
 )
 
 # JUCE compile definitions
@@ -40,6 +43,8 @@ target_link_libraries(SignalForge PRIVATE
     juce::juce_audio_basics
     juce::juce_audio_devices
     juce::juce_audio_formats
+    juce::juce_gui_extra
+    juce::juce_audio_utils
 )
 
 # Linux specific libraries that fix your curl linker errors and GTK deps
