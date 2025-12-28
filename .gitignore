@@ -1,15 +1,25 @@
-build/
-Builds/
-.DS_Store
-*.user
-*.suo
-*.vcxproj*
-*.xcodeproj
-*.xcworkspace
+# IDE files
 .idea/
 .vscode/
+
+# Build artifacts
+build/
+Builds/
+*artefacts/
 *.o
 *.a
 *.so
 *.dylib
 *.dll
+
+# OS-specific
+.DS_Store
+
+# User-specific
+*.user
+*.suo
+
+# Project-specific
+*.vcxproj*
+*.xcodeproj
+*.xcworkspace
