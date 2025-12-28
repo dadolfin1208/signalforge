@@ -47,3 +47,6 @@ To clean the build artifacts:
 ```bash
 ./scripts/clean.sh
 ```
+
+## How to record a test file
+At this stage, recording functionality is not yet implemented. Please refer to future updates for instructions.
