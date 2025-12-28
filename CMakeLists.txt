@@ -18,14 +18,17 @@ juce_generate_juce_header(SignalForge)
 target_sources(SignalForge PRIVATE
     Source/Main.cpp
     Source/MainComponent.cpp
+    Source/Utils/Logger.cpp
     Core/AudioEngine/AudioEngine.cpp
     Core/AudioEngine/Meter.cpp
+    Core/AudioEngine/Recording/AudioRecorder.cpp
 )
 
 # Add Source directory to includes
 target_include_directories(SignalForge PRIVATE
     Source
     Core
+    Core/AudioEngine/Recording
 )
 
 # JUCE compile definitions
@@ -47,6 +50,20 @@ target_link_libraries(SignalForge PRIVATE
     juce::juce_audio_utils
 )
 
+# Add LockFreeAudioFIFO test executable
+add_executable(LockFreeAudioFIFOTest tests/LockFreeAudioFIFOTest.cpp)
+
+target_include_directories(LockFreeAudioFIFOTest PRIVATE
+    Core/AudioEngine
+)
+
+# Find CURL specifically for the test executable
+find_package(CURL REQUIRED)
+
+target_link_libraries(LockFreeAudioFIFOTest PRIVATE
+    juce::juce_core
+    CURL::libcurl
+)
 # Linux specific libraries that fix your curl linker errors and GTK deps
 if(UNIX AND NOT APPLE)
     find_package(PkgConfig REQUIRED)

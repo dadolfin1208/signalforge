@@ -1,5 +1,6 @@
 #include "Meter.h"
 #include <cmath> // For std::sqrt
+#include "Utils/Logger.h"
 
 Meter::Meter(juce::AudioSource* inputSource)
     : input(inputSource)
@@ -13,15 +14,20 @@ Meter::~Meter()
 void Meter::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     input->prepareToPlay(samplesPerBlockExpected, sampleRate);
+}
 
-    int numChannels = 2; // Default to stereo, will adjust in getNextAudioBlock
+void Meter::setupInternalBuffers(int samplesPerBlockExpected, double sampleRate, int numChannels)
+{
+    juce::ignoreUnused(samplesPerBlockExpected, sampleRate);
+
+    numChannels_ = numChannels;
 
     peaks.clear();
     rmsValues.clear();
     rmsSums.clear();
     rmsCounts.clear();
 
-    for (int i = 0; i < numChannels; ++i)
+    for (int i = 0; i < numChannels_; ++i)
     {
         peaks.push_back(std::make_unique<std::atomic<float>>(0.0f));
         rmsValues.push_back(std::make_unique<std::atomic<float>>(0.0f));
@@ -37,30 +43,17 @@ void Meter::releaseResources()
 
 void Meter::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
+
+
     input->getNextAudioBlock(bufferToFill);
 
-    int numChannels = bufferToFill.buffer->getNumChannels();
     int numSamples = bufferToFill.numSamples;
 
-    if (numChannels > (int)peaks.size())
+    // Use numChannels_ for iteration, assuming it's correctly set in prepareToPlay
+    for (int channel = 0; channel < juce::jmin((int)numChannels_, bufferToFill.buffer->getNumChannels()); ++channel)
     {
-        size_t oldSize = peaks.size();
-        peaks.reserve(numChannels);
-        rmsValues.reserve(numChannels);
-        rmsSums.reserve(numChannels);
-        rmsCounts.reserve(numChannels);
 
-        for (size_t i = oldSize; i < (size_t)numChannels; ++i)
-        {
-            peaks.push_back(std::make_unique<std::atomic<float>>(0.0f));
-            rmsValues.push_back(std::make_unique<std::atomic<float>>(0.0f));
-            rmsSums.push_back(0.0f);
-            rmsCounts.push_back(0);
-        }
-    }
 
-    for (int channel = 0; channel < numChannels; ++channel)
-    {
         const float* channelData = bufferToFill.buffer->getReadPointer(channel);
         float currentPeak = 0.0f;
         float currentRMSSum = 0.0f;

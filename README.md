@@ -46,4 +46,16 @@ To clean the build artifacts:
 
 ```bash
 ./scripts/clean.sh
+<<<<<<< Updated upstream
 ```
+
+## How to record a test file
+
+To record a test file:
+
+1.  Launch the application using `./scripts/run.sh`.
+2.  In the application window, ensure an audio input device is selected via the audio settings component.
+3.  Click the "Record" button. The status label will change to "Recording...".
+4.  Speak into your microphone or play audio through your selected input device.
+5.  Click the "Stop" button. The status label will change back to "Idle".
+6.  Your recorded `.wav` file will be saved in the `~/SignalForgeRecordings/` directory, named with a timestamp.

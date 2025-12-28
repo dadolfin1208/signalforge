@@ -24,7 +24,7 @@ public:
 
     void shutdown() override
     {
-        mainWindow = nullptr;
+        mainWindow = nullptr; // (the window holds our MainComponent and therefore the AudioEngine)
         SignalForgeLogger::shutdown();
     }
 
@@ -50,7 +50,9 @@ private:
                              DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar(true);
-            setContentOwned(new MainComponent(), true);
+            auto* mainContent = new MainComponent();
+            setContentOwned(mainContent, true);
+            mainContent->initialiseAudio();
 
            #if JUCE_MAC
             setMenuBar(this);

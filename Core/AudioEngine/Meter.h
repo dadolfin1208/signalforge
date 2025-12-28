@@ -24,6 +24,10 @@ private:
     std::vector<std::unique_ptr<std::atomic<float>>> rmsValues;
     std::vector<float> rmsSums;
     std::vector<int> rmsCounts;
+    int numChannels_ = 0; // New member variable
+
+public:
+    void setupInternalBuffers(int samplesPerBlockExpected, double sampleRate, int numChannels); // New helper method
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Meter)
 };
