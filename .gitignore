@@ -1,0 +1,15 @@
+build/
+Builds/
+.DS_Store
+*.user
+*.suo
+*.vcxproj*
+*.xcodeproj
+*.xcworkspace
+.idea/
+.vscode/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
