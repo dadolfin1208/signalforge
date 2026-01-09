@@ -1,35 +1,14 @@
 #include "AudioEngine.h"
-#include "Meter.h" // Include Meter header
-
-// Placeholder for AudioGraph
-class AudioGraph : public juce::AudioSource
-{
-public:
-    void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override
-    {
-        juce::ignoreUnused(samplesPerBlockExpected, sampleRate);
-    }
-
-    void releaseResources() override {}
-
-    void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override
-    {
-        // Simple pass-through: copy input to output for all channels
-        for (int channel = 0; channel < bufferToFill.buffer->getNumChannels(); ++channel)
-        {
-            bufferToFill.buffer->copyFrom(channel, bufferToFill.startSample,
-                                           *bufferToFill.buffer, channel, bufferToFill.startSample,
-                                           bufferToFill.numSamples);
-        }
-    }
-};
+#include "Meter.h"
+#include "MultiTrackMixer.h"
+#include "MidiManager.h"
 
 AudioEngine::AudioEngine()
-    : audioGraph(std::make_unique<AudioGraph>()),
-      meter(std::make_unique<Meter>(static_cast<juce::AudioSource*>(audioGraph.get()))) // Meter takes AudioGraph as input
+    : mixer(std::make_unique<MultiTrackMixer>()),
+      meter(std::make_unique<Meter>(mixer.get())),
+      midiManager(std::make_unique<MidiManager>())
 {
-    // Initialize with default devices.
-    // This will be replaced by a device selector later.
+    // Initialize with default devices
     deviceManager.initialiseWithDefaultDevices(2, 2);
 
     // Set Meter as the source for the AudioSourcePlayer
@@ -37,6 +16,13 @@ AudioEngine::AudioEngine()
 
     // Register AudioSourcePlayer with the AudioDeviceManager
     deviceManager.addAudioCallback(&audioSourcePlayer);
+    
+    // Setup MIDI callback
+    midiManager->onMidiReceived = [this](const juce::MidiMessage& message) {
+        // Handle MIDI messages here
+        // For now, just log them (already done in MidiManager)
+        juce::ignoreUnused(message);
+    };
 }
 
 AudioEngine::~AudioEngine()
@@ -44,7 +30,6 @@ AudioEngine::~AudioEngine()
     deviceManager.removeAudioCallback(&audioSourcePlayer);
     audioSourcePlayer.setSource(nullptr);
     meter->releaseResources();
-    // audioGraph->releaseResources(); // Meter already released audioGraph resources
 }
 
 void AudioEngine::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
@@ -60,4 +45,45 @@ void AudioEngine::releaseResources()
 void AudioEngine::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     meter->getNextAudioBlock(bufferToFill);
+}
+
+// New multi-track methods
+int AudioEngine::addTrack(const juce::String& name)
+{
+    return mixer->addTrack(name);
+}
+
+void AudioEngine::removeTrack(int trackIndex)
+{
+    mixer->removeTrack(trackIndex);
+}
+
+Track* AudioEngine::getTrack(int trackIndex)
+{
+    return mixer->getTrack(trackIndex);
+}
+
+int AudioEngine::getNumTracks() const
+{
+    return mixer->getNumTracks();
+}
+
+void AudioEngine::play()
+{
+    mixer->play();
+}
+
+void AudioEngine::stop()
+{
+    mixer->stop();
+}
+
+void AudioEngine::setPosition(double positionInSeconds)
+{
+    mixer->setPosition(positionInSeconds);
+}
+
+bool AudioEngine::isPlaying() const
+{
+    return mixer->isPlaying();
 }

@@ -13,7 +13,8 @@ public:
         if (!logFile.getParentDirectory().exists())
             logFile.getParentDirectory().createDirectory();
 
-        juce::Logger::setCurrentLogger(new juce::FileLogger(logFile, "SignalForge Log"));
+        logger = std::make_unique<juce::FileLogger>(logFile, "SignalForge Log");
+        juce::Logger::setCurrentLogger(logger.get());
         
         // Also log to the console in debug builds
        #if JUCE_DEBUG
@@ -24,5 +25,9 @@ public:
     static void shutdown()
     {
         juce::Logger::setCurrentLogger(nullptr);
+        logger.reset();
     }
+
+private:
+    static std::unique_ptr<juce::FileLogger> logger;
 };
