@@ -93,7 +93,12 @@ SimpleDAW::SimpleDAW() : isPlaying(false)
     
     base44Button->onClick = [this]() {
         statusLabel->setText("🌐 Opening Base44 Tools...", juce::dontSendNotification);
+        
+        // Launch local web interface
         juce::URL("http://localhost:5173").launchInDefaultBrowser();
+        
+        // Also show status in DAW
+        statusLabel->setText("🌐 Base44 Tools opened in browser", juce::dontSendNotification);
     };
     
     addAndMakeVisible(*aiMixButton);
