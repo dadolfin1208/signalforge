@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="#007cba" stroke="#ffffff" stroke-width="8"/>
+  
+  <!-- Musical note -->
+  <g transform="translate(256,256)">
+    <!-- Note stem -->
+    <rect x="60" y="-120" width="12" height="180" fill="#ffffff"/>
+    
+    <!-- Note head -->
+    <ellipse cx="45" cy="60" rx="25" ry="18" fill="#ffffff"/>
+    
+    <!-- Flag -->
+    <path d="M72 -120 Q120 -100 120 -60 Q120 -20 72 -40 Z" fill="#ffffff"/>
+    
+    <!-- Staff lines -->
+    <line x1="-80" y1="40" x2="120" y2="40" stroke="#ffffff" stroke-width="3"/>
+    <line x1="-80" y1="60" x2="120" y2="60" stroke="#ffffff" stroke-width="3"/>
+    <line x1="-80" y1="80" x2="120" y2="80" stroke="#ffffff" stroke-width="3"/>
+    <line x1="-80" y1="100" x2="120" y2="100" stroke="#ffffff" stroke-width="3"/>
+    <line x1="-80" y1="120" x2="120" y2="120" stroke="#ffffff" stroke-width="3"/>
+  </g>
+  
+  <!-- SignalForge text -->
+  <text x="256" y="450" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="32" font-weight="bold">SignalForge</text>
+</svg>

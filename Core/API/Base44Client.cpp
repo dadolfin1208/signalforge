@@ -1,10 +1,19 @@
 #include "Base44Client.h"
 #include <JuceHeader.h>
 
-Base44Client::Base44Client(const String& baseUrl) : baseUrl(baseUrl) {}
+Base44Client::Base44Client(const String& baseUrl) : baseUrl(baseUrl), authToken(""), appId("") {}
 
 void Base44Client::setToken(const String& token) {
     authToken = token;
+}
+
+void Base44Client::setAppId(const String& appId) {
+    this->appId = appId;
+}
+
+void Base44Client::initialize() {
+    // Set your app ID from the frontend
+    setAppId("6961194a8a60eaa48c2d5f19");
 }
 
 bool Base44Client::isAuthenticated() {

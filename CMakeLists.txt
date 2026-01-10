@@ -38,16 +38,11 @@ target_sources(SignalForge PRIVATE
     Source/Main.cpp
     Source/MainComponent.cpp
     Source/Utils/Logger.cpp
+    Source/Utils/SignalForgeIcon.cpp
     Source/Version.h
     
     # GUI Components
-    Source/GUI/TrackView.cpp
-    Source/GUI/MixerPanel.cpp
-    Source/GUI/TransportControls.cpp
-    Source/GUI/MidiSettingsPanel.cpp
-    Source/GUI/EffectsPanel.cpp
-    Source/GUI/PluginBrowser.cpp
-    Source/GUI/WaveformDisplay.cpp
+    Source/GUI/SimpleDAW.cpp
     
     # Audio Engine
     Core/AudioEngine/AudioEngine.cpp

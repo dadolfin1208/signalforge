@@ -3,8 +3,12 @@
 
 class Base44Client {
 public:
-    Base44Client(const String& baseUrl);
+    Base44Client(const String& baseUrl = "https://api.base44.com");
     void setToken(const String& token);
+    void setAppId(const String& appId);
+    
+    // Initialize with your app credentials
+    void initialize();
     
     // Auth
     void authenticate(std::function<void(bool, String)> callback);
@@ -32,7 +36,7 @@ public:
     void getStemResults(const String& projectId, std::function<void(bool, var)> callback);
 
 private:
-    String baseUrl, authToken;
+    String baseUrl, authToken, appId;
     
     void makeRequest(const String& endpoint, const String& method, 
                     const var& data, std::function<void(bool, var)> callback);
