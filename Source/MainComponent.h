@@ -26,6 +26,9 @@ public:
     void timerCallback() override;
 
 private:
+    // API callbacks
+    void handleAuthStateChanged(bool authenticated);
+    void handleProcessingComplete(const String& type, var result);
     AudioEngine audioEngine;
 
     // GUI Components

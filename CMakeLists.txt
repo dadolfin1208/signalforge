@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(SignalForge VERSION 0.1.0 LANGUAGES C CXX)
+project(SignalForge VERSION 1.0.0 LANGUAGES C CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -38,6 +38,7 @@ target_sources(SignalForge PRIVATE
     Source/Main.cpp
     Source/MainComponent.cpp
     Source/Utils/Logger.cpp
+    Source/Version.h
     
     # GUI Components
     Source/GUI/TrackView.cpp
@@ -58,6 +59,12 @@ target_sources(SignalForge PRIVATE
     Core/AudioEngine/PluginHost.cpp
     Core/AudioEngine/AudioRecorder.cpp
     Core/AudioEngine/ProjectManager.cpp
+    
+    # API Integration
+    Core/API/Base44Client.cpp
+    Core/API/APIManager.cpp
+    Core/Auth/TokenManager.cpp
+    Core/Auth/ProtocolHandler.cpp
 )
 
 # Include directories
@@ -91,6 +98,7 @@ target_link_libraries(SignalForge PRIVATE
     juce::juce_audio_processors
     juce::juce_audio_utils
     juce::juce_dsp
+    juce::juce_cryptography
 )
 
 # Optional OpenGL support
@@ -138,6 +146,15 @@ if(UNIX AND NOT APPLE)
     find_package(CURL REQUIRED)
     target_link_libraries(SignalForge PRIVATE CURL::libcurl)
     
+    # libsecret for secure storage (optional)
+    pkg_check_modules(LIBSECRET libsecret-1)
+    if(LIBSECRET_FOUND)
+        target_include_directories(SignalForge PRIVATE ${LIBSECRET_INCLUDE_DIRS})
+        target_link_libraries(SignalForge PRIVATE ${LIBSECRET_LIBRARIES})
+        target_compile_definitions(SignalForge PRIVATE SIGNALFORGE_LIBSECRET=1)
+        message(STATUS "libsecret support enabled")
+    endif()
+    
     # GTK3 for native Linux GUI
     pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
     target_include_directories(SignalForge PRIVATE ${GTK3_INCLUDE_DIRS})
@@ -166,7 +183,12 @@ elseif(APPLE)
         "-framework Accelerate"
         "-framework CoreFoundation"
         "-framework IOKit"
+        "-framework Security"
     )
+    
+    # CURL for networking (add for all platforms)
+    find_package(CURL REQUIRED)
+    target_link_libraries(SignalForge PRIVATE CURL::libcurl)
     
     # macOS audio driver detection
     find_library(COREAUDIO_FRAMEWORK CoreAudio)
@@ -195,6 +217,11 @@ elseif(APPLE)
 
 elseif(WIN32)
     # Windows-specific setup
+    
+    # CURL for networking
+    find_package(CURL REQUIRED)
+    target_link_libraries(SignalForge PRIVATE CURL::libcurl)
+    
     target_link_libraries(SignalForge PRIVATE
         winmm
         ole32
@@ -203,6 +230,8 @@ elseif(WIN32)
         version
         shlwapi
         oleaut32
+        advapi32
+        crypt32
     )
     
     if(SIGNALFORGE_USE_OPENGL)

@@ -1,4 +1,6 @@
 #include "MainComponent.h"
+#include "../Core/API/APIManager.h"
+#include "../Core/Auth/ProtocolHandler.h"
 #include "GUI/TrackView.h"
 #include "GUI/MixerPanel.h"
 #include "GUI/TransportControls.h"
@@ -32,6 +34,19 @@ MainComponent::MainComponent()
     // Create managers
     audioRecorder = std::make_unique<AudioRecorder>();
     projectManager = std::make_unique<ProjectManager>(audioEngine);
+    
+    // Initialize API
+    auto& apiManager = APIManager::getInstance();
+    apiManager.onAuthStateChanged = [this](bool authenticated) {
+        handleAuthStateChanged(authenticated);
+    };
+    
+    apiManager.onProcessingComplete = [this](const String& type, var result) {
+        handleProcessingComplete(type, result);
+    };
+    
+    // Register protocol handler
+    ProtocolHandler::registerProtocol();
     
     // Add main GUI components
     addAndMakeVisible(*trackView);
@@ -299,5 +314,38 @@ void MainComponent::timerCallback()
         deviceNameLabel.setText("Device: None", juce::dontSendNotification);
         cpuUsageLabel.setText("CPU Usage: N/A", juce::dontSendNotification);
         activeChannelsLabel.setText("Channels: N/A", juce::dontSendNotification);
+    }
+}
+
+void MainComponent::handleAuthStateChanged(bool authenticated) {
+    if (authenticated) {
+        DBG("User authenticated successfully");
+        // Update UI to show authenticated state
+    } else {
+        DBG("User authentication failed or logged out");
+        // Update UI to show unauthenticated state
+    }
+}
+
+void MainComponent::handleProcessingComplete(const String& type, var result) {
+    DBG("Processing complete: " + type);
+    
+    if (type == "mixing") {
+        // Handle mixing results
+        if (result.hasProperty("suggestions")) {
+            DBG("Mixing suggestions received");
+        }
+    } else if (type == "mastering") {
+        // Handle mastering results
+        if (result.hasProperty("processed_file_url")) {
+            String processedUrl = result["processed_file_url"].toString();
+            DBG("Mastered file available: " + processedUrl);
+        }
+    } else if (type == "stems") {
+        // Handle stem separation results
+        if (result.hasProperty("stems")) {
+            var stems = result["stems"];
+            DBG("Stems separated successfully");
+        }
     }
 }
